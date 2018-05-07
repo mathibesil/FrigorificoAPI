@@ -1,0 +1,20 @@
+{
+  "name": "frigorifico_api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mathias Besil",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
+    "mssql": "^4.1.0",
+    "mysql-events": "0.0.11",
+    "node-schedule": "^1.3.0",
+    "socket.io": "^2.1.0",
+    "tedious": "^2.2.4"
+  }
+}
