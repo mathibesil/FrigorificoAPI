@@ -1,75 +1,54 @@
-//Initiallising node modules
-var express = require("express");
-var bodyParser = require("body-parser");
+var express = require('express');
+var bodyParser = require('body-parser');
+var dbConfig = require('./config/database.config.js');
 var sql = require("mssql");
+
+// create express app
 var app = express();
-var dbConfig = require('./config/configdb.js');
-var MySQLEvents = require('mysql-events');
+// parse requests of content-type - application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }))
 
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-// Body Parser Middleware
-app.use(bodyParser.json());
+// parse requests of content-type - application/json
+app.use(bodyParser.json())
 
-var dsn = {
-  host:     'stratus.uy',
-  user:     'linux',
-  password: 'linux'
-};
-
-//CORS Middleware
-app.use(function (req, res, next) {
-    //Enabling CORS
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, contentType,Content-Type, Accept, Authorization");
-    next();
+// Connecting to the database
+//mongoose.connect(dbConfig.url)
+sql.connect(dbConfig, function (err) {
+    if (err) {
+        console.log('Could not connect to the database. Exiting now...');
+        process.exit();
+    }
+    else {
+        console.log("Successfully connected to the database.")
+    }
 });
 
-//Setting up server
- var server = app.listen(process.env.PORT || 61433, function () {
-    //var port = server.address().port;
-    console.log("App now running on port");
- });
-
- //Function to connect to database and execute query
- var  executeQuery = function(res, query){
-   sql.close();
-      sql.connect(dbConfig.config, function (err) {
-          if (err) {
-                      console.log("Error while connecting database :- " + err);
-                      res.send(err);
-                   }
-                   else {
-                          // create Request object
-                          var request = new sql.Request();
-                          // query to the database
-                          request.query(query, (err, result) => {
-                            if (err) {
-                                       console.log("Error while querying database :- " + err);
-                                       res.send(err);
-                                     }else{
-                                         res.status(200).json(result.recordset);
-                                     }
-    })
-                        }
-       });
- }
-
- //GET API
-app.get("/api/user", function(req , res){
-                var query = "select e.EspecieDsc Especie,a.articulosdsc Articulo FROM ARTICULOS a INNER JOIN ESPECIE e ON e.EspecieId=a.EspecieId";
-                executeQuery (res, query);
+app.get('/', (req, res) => {
+    res.json({"message": "Welcome to Profes API"});
 });
 
+// Require Materias routes
+// require('./app/routes/materia.route.js')(app);
+// // Require Personas routes
+// require('./app/routes/persona.route.js')(app);
+// // Require Users routes
+// require('./app/routes/user.route.js')(app);
+// // Require Categrias routes
+// require('./app/routes/nivel.route.js')(app);
+// // Require Categrias routes
+// require('./app/routes/tipo.route.js')(app);
+// // Require Years routes
+// require('./app/routes/year.route.js')(app);
 
-io.on('connection', function(socket){
-  socket.on('NEW_NOTIFICATION', function(notification){
-    console.log(notification);
-    io.emit('chat message', notification);
-  });
+// error handler
+// define as the last app.use callback
+app.use(function (err, req, res, next) {
+    res.status(err.status || 500);
+    res.json({ message: `${err.message}` });
 });
 
-app.post('/register', (req, res) => {
-
+// listen for requests process.env.PORT
+var server = app.listen(process.env.PORT || 33000, () => {
+    var port = server.address().port;
+    console.log("Server is listening on port " + port);
 });
