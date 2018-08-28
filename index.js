@@ -12,33 +12,33 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 // Connecting to the database
-//mongoose.connect(dbConfig.url)
-sql.connect(dbConfig, function (err) {
-    if (err) {
-        console.log('Could not connect to the database. Exiting now...');
-        process.exit();
-    }
-    else {
-        console.log("Successfully connected to the database.")
-    }
-});
+    sql.close();
+    sql.connect(dbConfig, function (err) {
+        if (err) {
+            console.log('Could not connect to the database. Exiting now...');
+            process.exit();
+        }
+        else {
+            console.log("Successfully connected to the database.")
+        }
+       //
+    });
 
 app.get('/', (req, res) => {
-    res.json({"message": "Welcome to Profes API"});
+    res.json({"message": "Welcome to Abasto API"});
 });
 
-// Require Materias routes
-// require('./app/routes/materia.route.js')(app);
-// // Require Personas routes
-// require('./app/routes/persona.route.js')(app);
-// // Require Users routes
-// require('./app/routes/user.route.js')(app);
-// // Require Categrias routes
-// require('./app/routes/nivel.route.js')(app);
-// // Require Categrias routes
-// require('./app/routes/tipo.route.js')(app);
-// // Require Years routes
-// require('./app/routes/year.route.js')(app);
+// Require Articulos routes
+require('./app/routes/articulo.route.js')(app);
+// Require Clientes routes
+require('./app/routes/cliente.route.js')(app);
+// Require Camiones routes
+require('./app/routes/camion.route.js')(app);
+// Require PDetalles routes
+require('./app/routes/pedido_detalle.route.js')(app);
+// Require Pedidos routes
+require('./app/routes/pedido.route.js')(app);
+
 
 // error handler
 // define as the last app.use callback
